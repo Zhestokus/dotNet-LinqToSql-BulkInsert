@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LinqToSqlBulkInsertConsoleApp.DAL;
 
 namespace LinqToSqlBulkInsertConsoleApp
@@ -16,14 +14,12 @@ namespace LinqToSqlBulkInsertConsoleApp
             using (var db = new StockDataContext(connectionString))
             {
                 var products = ImportProducts();
-                
-                var bulkCopy = new ObjectBulkCopy<Product>();
-                bulkCopy.WriteToServer(products);
 
+                using (var bulkCopy = new ObjectBulkCopy<Product>((SqlConnection) db.Connection))
+                {
+                    bulkCopy.WriteToServer(products);
+                }
             }
-            
-
-
         }
 
         static IEnumerable<Product> ImportProducts()
@@ -32,7 +28,4 @@ namespace LinqToSqlBulkInsertConsoleApp
             return Enumerable.Empty<Product>();
         }
     }
-
-
-    
 }
